@@ -499,9 +499,6 @@ if page == "home":
 
     st.markdown(f'<div class="canva-sec"><img src="{data_uri("P1S3.png")}" /></div>', unsafe_allow_html=True)
 
-    st.markdown(f'<div class="canva-sec"><img src="{data_uri("P1S4.png")}" /></div>', unsafe_allow_html=True)
-
-
 elif page == "about":
     st.markdown(f'<div class="about-wrap"><img src="{data_uri("P2S1.png")}" /></div>', unsafe_allow_html=True)
 
