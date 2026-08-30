@@ -1,8 +1,9 @@
 import streamlit as st
 import numpy as np
 from PIL import Image
-import base64, sys, io
+import base64, sys, io, math
 from pathlib import Path
+from datetime import datetime
 
 st.set_page_config(
     page_title="PAN-MED | Skin Cancer Detection",
@@ -91,55 +92,67 @@ div[data-testid="stHorizontalBlock"]:first-of-type {
 
 /* SCAN SECTION */
 .scan-wrap{
-  background:linear-gradient(160deg,#0f0028 0%,#1e0050 40%,#281549 70%,#180038 100%);
+  background:linear-gradient(150deg,#3a0a8f 0%,#7c1fc4 32%,#b026d6 58%,#7c1fc4 82%,#4a0aa8 100%);
   padding:64px 5vw 72px;
   position:relative;overflow:hidden;
 }
 .scan-wrap::before{
   content:'';position:absolute;inset:0;
   background:
-    radial-gradient(ellipse at 20% 50%,rgba(180,0,255,0.13) 0%,transparent 60%),
-    radial-gradient(ellipse at 80% 20%,rgba(100,0,200,0.10) 0%,transparent 60%);
+    radial-gradient(ellipse at 15% 20%,rgba(255,255,255,0.16) 0%,transparent 45%),
+    radial-gradient(ellipse at 85% 15%,rgba(255,120,220,0.28) 0%,transparent 55%),
+    radial-gradient(ellipse at 30% 90%,rgba(160,0,255,0.30) 0%,transparent 60%);
   pointer-events:none;
 }
 .scan-inner{max-width:820px;margin:0 auto;position:relative;z-index:1;}
 .scan-head{text-align:center;margin-bottom:36px;}
 .scan-head h2{font-size:clamp(22px,3.5vw,34px);font-weight:800;margin-bottom:6px;}
-.scan-head h2 em{color:#cc44ff;font-style:normal;}
-.scan-head p{color:rgba(200,160,255,0.6);font-size:13.5px;}
+.scan-head h2 em{color:#ffd6fb;font-style:normal;}
+.scan-head p{color:rgba(255,235,255,0.75);font-size:13.5px;}
 .cam-orb{
-  display:flex;flex-direction:column;align-items:center;margin-bottom:28px;
+  display:flex;flex-direction:column;align-items:center;margin-bottom:32px;
 }
 .cam-orb-icon{
   display:inline-flex;align-items:center;justify-content:center;
-  width:80px;height:80px;
-  background:linear-gradient(135deg,#4400bb,#9900ff);
-  border-radius:22px;font-size:36px;
-  box-shadow:0 10px 34px rgba(140,0,255,0.45);
-  margin-bottom:10px;
+  width:110px;height:110px;
+  background:linear-gradient(135deg,#7c1fe0,#e83fd6);
+  border-radius:28px;font-size:50px;
+  box-shadow:0 14px 44px rgba(210,0,255,0.55),inset 0 2px 8px rgba(255,255,255,0.35);
+  margin-bottom:16px;position:relative;overflow:hidden;
 }
-.cam-orb span{color:#fff;font-size:15px;font-weight:700;}
-.cam-orb small{color:rgba(195,150,255,0.6);font-size:11px;margin-top:3px;}
+.cam-orb-icon::after{
+  content:'';position:absolute;top:-30%;left:-20%;width:140%;height:70%;
+  background:linear-gradient(160deg,rgba(255,255,255,0.35),transparent 60%);
+  transform:rotate(-8deg);pointer-events:none;
+}
+.cam-orb span{color:#fff;font-size:24px;font-weight:800;text-shadow:0 0 22px rgba(255,140,255,0.55);}
+.cam-orb small{color:rgba(255,235,255,0.85);font-size:12.5px;margin-top:6px;max-width:360px;text-align:center;line-height:1.5;}
 
 /* TABS */
 .stTabs [data-baseweb="tab-list"]{
-  background:rgba(70,0,160,0.22);border-radius:14px;
-  gap:3px;padding:4px;border:1px solid rgba(140,70,255,0.2);
-  max-width:420px;margin:0 auto 22px;
+  background:rgba(255,255,255,0.10);border-radius:16px;
+  gap:4px;padding:5px;border:1px solid rgba(255,255,255,0.22);
+  max-width:460px;margin:0 auto 24px;
 }
 .stTabs [data-baseweb="tab"]{
-  color:rgba(195,150,255,0.7)!important;
-  font-weight:600;font-size:13px;border-radius:10px;padding:9px 28px;
+  color:rgba(255,255,255,0.8)!important;
+  font-weight:700;font-size:14px;border-radius:12px;padding:11px 30px;
 }
 .stTabs [aria-selected="true"]{
-  background:linear-gradient(135deg,#4400bb,#9900ff)!important;
-  color:#fff!important;box-shadow:0 4px 14px rgba(140,0,255,0.35);
+  background:linear-gradient(135deg,#7c1fe0,#e83fd6)!important;
+  color:#fff!important;box-shadow:0 6px 18px rgba(210,0,255,0.45);
 }
 [data-testid="stFileUploader"]{
-  background:rgba(70,0,160,0.12);
-  border:2px dashed rgba(140,70,255,0.38);border-radius:16px;
+  background:rgba(255,255,255,0.08);
+  border:2px dashed rgba(255,255,255,0.35);border-radius:18px;
 }
-[data-testid="stFileUploader"] label{color:rgba(195,150,255,0.8)!important;}
+[data-testid="stFileUploader"] label{color:rgba(255,240,255,0.9)!important;}
+[data-testid="stFileUploader"] section{background:rgba(15,0,35,0.35)!important;border-radius:14px!important;}
+[data-testid="stFileUploaderDropzoneInstructions"] span,
+[data-testid="stFileUploaderDropzoneInstructions"] small{color:rgba(255,240,255,0.75)!important;}
+[data-testid="stBaseButton-secondary"]{
+  background:#fff!important;color:#1a0a2e!important;border-radius:10px!important;font-weight:700!important;
+}
 
 /* BUTTON */
 .stButton>button{
@@ -193,6 +206,40 @@ div[data-testid="stHorizontalBlock"]:first-of-type {
   color:rgba(255,210,120,.8);font-size:10.5px;line-height:1.65;
 }
 .gcam-label{color:rgba(195,150,255,.7);font-size:10.5px;text-align:center;margin-top:4px;}
+
+/* REPORT LETTERHEAD */
+.report-shell{
+  background:linear-gradient(160deg,rgba(15,0,40,0.55),rgba(25,0,60,0.35));
+  border:1px solid rgba(140,70,255,0.22);border-radius:24px;
+  padding:22px 22px 4px;margin-bottom:16px;
+}
+.report-head{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  border-bottom:1px solid rgba(150,70,255,0.25);
+  padding-bottom:16px;margin-bottom:18px;flex-wrap:wrap;gap:10px;
+}
+.report-brand{display:flex;flex-direction:column;gap:3px;}
+.report-brand .brand-line{color:#fff;font-size:16px;font-weight:800;}
+.report-brand .brand-line span{color:#cc44ff;}
+.report-brand small{color:rgba(195,150,255,.55);font-size:10.5px;font-weight:500;letter-spacing:.3px;}
+.report-meta{color:rgba(195,150,255,.6);font-size:11px;text-align:right;line-height:1.7;}
+.report-meta b{color:#fff;font-family:monospace;font-weight:600;}
+
+/* HERO DIAGNOSIS CARD */
+.hero-card{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;}
+.hero-left{display:flex;flex-direction:column;gap:8px;}
+.hero-ring{position:relative;width:104px;height:104px;flex:0 0 auto;}
+.hero-ring svg{width:100%;height:100%;transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:rgba(70,0,160,.35);stroke-width:10;}
+.ring-fg{fill:none;stroke:#b347ff;stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset .6s ease;}
+.ring-label{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.ring-label strong{color:#fff;font-size:20px;font-weight:800;line-height:1.1;}
+.ring-label span{color:rgba(195,150,255,.6);font-size:8.5px;letter-spacing:.6px;text-transform:uppercase;margin-top:2px;}
+
+/* CHIP GRID (recommended actions) */
+.chip-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
 
 /* EMAIL/PDF ACTION BAR */
 .action-row{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;}
@@ -327,28 +374,10 @@ if page == "home":
             impl  = IMPLICATIONS.get(code, IMPLICATIONS["DEFAULT"])
 
             bmap  = {"red":("b-red","HIGH RISK"),"orange":("b-orange","PRE-MALIGNANT"),
-                     "yellow":("b-yellow","🔵 MONITOR"),"green":("b-green","BENIGN")}
+                     "yellow":("b-yellow","MONITOR"),"green":("b-green","BENIGN")}
             bcls, btxt = bmap[tier]
 
-            # ── Diagnosis card ────────────────────────────────────────────────
-            st.markdown(f"""
-            <div class="rc">
-              <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;">
-                <div>
-                  <div class="diag-name">{name}</div>
-                  <div class="diag-code">Code: {code.upper()}</div>
-                </div>
-                <span class="rbadge {bcls}" style="margin-left:auto">{btxt}</span>
-              </div>
-              <div class="conf-row"><span>Confidence Score</span><strong>{conf:.1f}%</strong></div>
-              <div class="conf-bg"><div class="conf-fill" style="width:{conf:.1f}%"></div></div>
-            </div>
-            """, unsafe_allow_html=True)
-
-            # ── GradCAM ───────────────────────────────────────────────────────
-            st.markdown('<div class="rc"><div class="rc-title">🌡️ GradCAM Visualization</div><div class="rc-sub">Original · Heatmap · Overlay — regions driving the AI\'s decision</div>', unsafe_allow_html=True)
-            st.caption(f"GradCAM layer detection in progress…")
-
+            # ── GradCAM (computed once, cached in session_state) ────────────────
             _sz   = (224,224)
             _imgr = image_input.resize(_sz)
             _orig = np.array(_imgr)
@@ -368,8 +397,7 @@ if page == "home":
                                 _conv_model = _l; break
                     if _conv_name: break
 
-            st.caption(f"🔍 GradCAM layer: `{_conv_name}`")
-
+            gradcam_imgs, gradcam_error = None, None
             try:
                 _gm = _tf.keras.models.Model(
                     inputs=_conv_model.inputs,
@@ -391,109 +419,168 @@ if page == "home":
                 _hmu = np.uint8(255*_hmr)
                 _hmc = _cv2.cvtColor(_cv2.applyColorMap(_hmu,_cv2.COLORMAP_JET),_cv2.COLOR_BGR2RGB)
                 _ov  = _cv2.addWeighted(_orig,0.6,_hmc,0.4,0)
-
-                co,ch,cv_ = st.columns(3)
-                with co:
-                    st.image(_imgr, use_container_width=True)
-                    st.markdown('<div class="gcam-label">Original</div>', unsafe_allow_html=True)
-                with ch:
-                    st.image(_PIL.fromarray(_hmc), use_container_width=True)
-                    st.markdown('<div class="gcam-label">Grad-CAM Heatmap</div>', unsafe_allow_html=True)
-                with cv_:
-                    st.image(_PIL.fromarray(_ov), use_container_width=True)
-                    st.markdown('<div class="gcam-label">Overlay</div>', unsafe_allow_html=True)
+                gradcam_imgs = (_imgr, _PIL.fromarray(_hmc), _PIL.fromarray(_ov))
             except Exception as _e:
-                st.error(f"GradCAM error: {_e}")
+                gradcam_error = str(_e)
 
-            st.markdown('</div>', unsafe_allow_html=True)
+            top5_idx = np.argsort(all_probs)[::-1][:5]
+            top5 = [(CLASS_NAMES[i], float(all_probs[i]*100)) for i in top5_idx]
 
-            # ── Top 5 ─────────────────────────────────────────────────────────
-            top5 = np.argsort(all_probs)[::-1][:5]
-            st.markdown('<div class="rc"><div class="rc-title">Top 5 Predictions</div>', unsafe_allow_html=True)
-            for i in top5:
-                pct = all_probs[i]*100
-                st.markdown(f"""
-                <div class="pred-row">
-                  <div class="pred-name">{CLASS_NAMES[i]}</div>
-                  <div class="pred-bar-bg"><div class="pred-bar" style="width:{min(pct,100):.1f}%"></div></div>
-                  <div class="pred-pct">{pct:.1f}%</div>
-                </div>""", unsafe_allow_html=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+            # Persist everything needed to render + export, so the report
+            # survives later reruns (e.g. clicking Download PDF or Send Email).
+            st.session_state.result = dict(
+                name=name, code=code, conf=conf, tier=tier, impl=impl,
+                bcls=bcls, btxt=btxt, gradcam_imgs=gradcam_imgs,
+                gradcam_error=gradcam_error, top5=top5,
+                report_id="PM-" + datetime.now().strftime("%Y%m%d-%H%M%S"),
+                generated_at=datetime.now().strftime("%B %d, %Y, %I:%M %p"),
+            )
 
-            # ── Clinical Implications ─────────────────────────────────────────
-            chips = "".join(f'<span class="chip">✓ {a}</span>' for a in impl["actions"])
+    # ── Persistent report render (survives PDF/email button reruns) ────────────
+    result = st.session_state.get("result")
+    if result:
+        name          = result["name"]
+        code          = result["code"]
+        conf          = result["conf"]
+        tier          = result["tier"]
+        impl          = result["impl"]
+        bcls          = result["bcls"]
+        btxt          = result["btxt"]
+        top5          = result["top5"]
+        report_id     = result["report_id"]
+        generated_at  = result["generated_at"]
+        gradcam_imgs  = result["gradcam_imgs"]
+
+        circumference = 2 * math.pi * 52
+        ring_offset   = circumference * (1 - min(conf, 100) / 100)
+
+        # ── Report letterhead ────────────────────────────────────────────
+        st.markdown(f"""
+        <div class="report-shell">
+          <div class="report-head">
+            <div class="report-brand"><div class="brand-line">✕ PAN<span>MED</span></div><small>AI-Assisted Dermatological Screening Report</small></div>
+            <div class="report-meta"><div>Report ID&nbsp;<b>{report_id}</b></div><div>{generated_at}</div></div>
+          </div>
+        """, unsafe_allow_html=True)
+
+        # ── Hero diagnosis card with confidence ring ─────────────────────
+        st.markdown(f"""
+        <div class="rc hero-card">
+          <div class="hero-left">
+            <div class="rc-sub">PRIMARY FINDING</div>
+            <div class="diag-name">{name}</div>
+            <div class="diag-code">Code: {code.upper()}</div>
+            <span class="rbadge {bcls}">{btxt}</span>
+          </div>
+          <div class="hero-ring">
+            <svg viewBox="0 0 120 120">
+              <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
+              <circle class="ring-fg" cx="60" cy="60" r="52"
+                style="stroke-dasharray:{circumference:.1f};stroke-dashoffset:{ring_offset:.1f}"></circle>
+            </svg>
+            <div class="ring-label"><strong>{conf:.0f}%</strong><span>Confidence</span></div>
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # ── GradCAM ───────────────────────────────────────────────────────
+        st.markdown('<div class="rc"><div class="rc-title">GradCAM Visualization</div>'
+                     '<div class="rc-sub">Original · Heatmap · Overlay — regions driving the AI\'s decision</div>',
+                     unsafe_allow_html=True)
+        if gradcam_imgs:
+            co, ch, cv_ = st.columns(3)
+            for col, im, lab in zip((co, ch, cv_), gradcam_imgs,
+                                     ("Original", "Grad-CAM Heatmap", "Overlay")):
+                with col:
+                    st.image(im, use_container_width=True)
+                    st.markdown(f'<div class="gcam-label">{lab}</div>', unsafe_allow_html=True)
+        else:
+            st.info(f"GradCAM unavailable: {result.get('gradcam_error') or 'unknown error'}")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        # ── Top 5 ─────────────────────────────────────────────────────────
+        st.markdown('<div class="rc"><div class="rc-title">Top 5 Predictions</div>', unsafe_allow_html=True)
+        for cname, pct in top5:
             st.markdown(f"""
-            <div class="rc">
-              <div class="rc-title">⚕️ Clinical Implications</div>
-              <div class="impl-box">
-                <div class="impl-cat">{impl['category']}</div>
-                <div class="impl-text">{impl['description']}</div>
-                <div>{chips}</div>
-              </div>
-              <div class="disc">⚠️ <strong>Medical Disclaimer:</strong> PAN-MED is an AI-assisted screening
-              tool and does <strong>not</strong> replace professional medical diagnosis. Always consult a
-              licensed dermatologist for accurate evaluation and treatment.</div>
-            </div>
-            """, unsafe_allow_html=True)
+            <div class="pred-row">
+              <div class="pred-name">{cname}</div>
+              <div class="pred-bar-bg"><div class="pred-bar" style="width:{min(pct,100):.1f}%"></div></div>
+              <div class="pred-pct">{pct:.1f}%</div>
+            </div>""", unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-            # ── PDF + Email actions ───────────────────────────────────────────
-            st.markdown('<div class="rc"><div class="rc-title">📤 Share / Export Results</div>', unsafe_allow_html=True)
+        # ── Clinical Implications ────────────────────────────────────────
+        chips = "".join(f'<span class="chip">✓ {a}</span>' for a in impl["actions"])
+        st.markdown(f"""
+        <div class="rc">
+          <div class="rc-title">Clinical Implications</div>
+          <div class="impl-box">
+            <div class="impl-cat">{impl['category']}</div>
+            <div class="impl-text">{impl['description']}</div>
+            <div class="chip-grid">{chips}</div>
+          </div>
+          <div class="disc"><strong>Medical Disclaimer:</strong> PAN-MED is an AI-assisted screening
+          tool and does <strong>not</strong> replace professional medical diagnosis. Always consult a
+          licensed dermatologist for accurate evaluation and treatment.</div>
+        </div>
+        """, unsafe_allow_html=True)
 
-            # Build PDF in memory
-            try:
-                from fpdf import FPDF
-                pdf = FPDF()
-                pdf.add_page()
-                pdf.set_font("Helvetica","B",20)
-                pdf.cell(0,12,"PAN-MED Diagnostic Report",ln=True)
-                pdf.set_font("Helvetica","",12)
-                pdf.ln(4)
-                pdf.cell(0,8,f"Diagnosis: {name}  ({code.upper()})",ln=True)
-                pdf.cell(0,8,f"Confidence: {conf:.1f}%",ln=True)
-                pdf.cell(0,8,f"Risk Tier: {btxt}",ln=True)
-                pdf.ln(4)
-                pdf.set_font("Helvetica","B",13)
-                pdf.cell(0,8,"Clinical Implications",ln=True)
-                pdf.set_font("Helvetica","",11)
-                pdf.multi_cell(0,6,impl['description'])
-                pdf.ln(3)
-                pdf.set_font("Helvetica","B",11)
-                pdf.cell(0,7,"Recommended Actions:",ln=True)
-                pdf.set_font("Helvetica","",11)
-                for a in impl["actions"]:
-                    pdf.cell(0,6,f"  • {a}",ln=True)
-                pdf.ln(4)
-                pdf.set_font("Helvetica","I",9)
-                pdf.multi_cell(0,5,"DISCLAIMER: This report is AI-generated and does not replace professional medical advice. Please consult a licensed dermatologist.")
-                pdf_bytes = pdf.output(dest="S").encode("latin-1")
-            except Exception:
-                pdf_bytes = None
+        st.markdown('</div>', unsafe_allow_html=True)  # close report-shell
 
-            ea, eb = st.columns(2)
-            with ea:
-                if pdf_bytes:
-                    st.download_button(
-                        label="📄  Download PDF Report",
-                        data=pdf_bytes,
-                        file_name=f"PANMED_{code.upper()}_report.pdf",
-                        mime="application/pdf",
-                        use_container_width=True
-                    )
-                else:
-                    st.info("Install `fpdf2` to enable PDF export: `pip install fpdf2`")
-            with eb:
-                # Compose mailto link with prefilled subject/body
-                subj = f"PAN-MED Result: {name}"
-                body = (f"Diagnosis: {name} ({code.upper()})\n"
-                        f"Confidence: {conf:.1f}%\n"
-                        f"Risk: {btxt}\n\n"
-                        f"{impl['description']}\n\n"
-                        "Generated by PAN-MED AI.")
-                import urllib.parse
-                mailto = f"mailto:?subject={urllib.parse.quote(subj)}&body={urllib.parse.quote(body)}"
-                st.markdown(f'<a class="act-btn" href="{mailto}">✉️ Forward to Email</a>', unsafe_allow_html=True)
+        # ── Export: real PDF + real email ────────────────────────────────
+        st.markdown('<div class="rc"><div class="rc-title">Share / Export Results</div>', unsafe_allow_html=True)
 
-            st.markdown('</div>', unsafe_allow_html=True)
+        pdf_bytes = None
+        try:
+            from report_generator import generate_pdf_report
+            gcam_o, gcam_h, gcam_ov = gradcam_imgs if gradcam_imgs else (None, None, None)
+            pdf_bytes = generate_pdf_report(
+                diagnosis_name=name, diagnosis_code=code, confidence=conf,
+                risk_label=btxt, risk_tier=tier, top5=top5, implication=impl,
+                gradcam_original=gcam_o, gradcam_heatmap=gcam_h, gradcam_overlay=gcam_ov,
+                report_id=report_id, generated_at=generated_at,
+            )
+        except Exception as _e:
+            st.error(f"PDF generation error: {_e}")
+
+        ea, eb = st.columns(2)
+        with ea:
+            if pdf_bytes:
+                st.download_button(
+                    label="📄  Download PDF Report",
+                    data=pdf_bytes,
+                    file_name=f"PANMED_{code.upper()}_report.pdf",
+                    mime="application/pdf",
+                    use_container_width=True,
+                )
+            else:
+                st.info("PDF export is unavailable — see error above.")
+        with eb:
+            with st.popover("✉️  Email Report", use_container_width=True):
+                to_email = st.text_input("Recipient email", key="email_to", placeholder="doctor@example.com")
+                if st.button("Send Report", key="send_email_btn", use_container_width=True):
+                    if not to_email or "@" not in to_email:
+                        st.warning("Enter a valid email address.")
+                    elif not pdf_bytes:
+                        st.warning("PDF isn't ready yet — see the error above.")
+                    else:
+                        try:
+                            from email_utils import send_report_email, EmailConfigError
+                            with st.spinner("Sending…"):
+                                send_report_email(
+                                    to_email=to_email, diagnosis_name=name, diagnosis_code=code,
+                                    confidence=conf, risk_label=btxt, risk_tier=tier,
+                                    category=impl["category"], description=impl["description"],
+                                    actions=impl["actions"], pdf_bytes=pdf_bytes,
+                                    pdf_filename=f"PANMED_{code.upper()}_report.pdf",
+                                )
+                            st.success(f"Report sent to {to_email}.")
+                        except EmailConfigError as e:
+                            st.warning(str(e))
+                        except Exception as e:
+                            st.error(f"Couldn't send email: {e}")
+
+        st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('</div></div>', unsafe_allow_html=True)  # close scan-inner + scan-wrap
 
@@ -502,28 +589,7 @@ if page == "home":
 elif page == "about":
     st.markdown(f'<div class="about-wrap"><img src="{data_uri("P2S1.png")}" /></div>', unsafe_allow_html=True)
 
-    st.markdown("""
-    <div style="background:#1e0848;padding:60px 8vw;">
-      <h2 style="color:#c77dff;font-size:26px;font-weight:800;margin-bottom:20px;">Technical Details</h2>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
-        <div style="background:rgba(80,0,180,0.18);border:1px solid rgba(140,70,255,0.25);border-radius:16px;padding:22px;">
-          <div style="font-size:28px;margin-bottom:10px;">🧠</div>
-          <div style="color:#fff;font-weight:700;font-size:14px;margin-bottom:6px;">Model Architecture</div>
-          <div style="color:rgba(200,160,255,0.7);font-size:12px;line-height:1.6;">Fine-tuned MobileNetV2 CNN with custom classification head trained on 13 dermatological classes.</div>
-        </div>
-        <div style="background:rgba(80,0,180,0.18);border:1px solid rgba(140,70,255,0.25);border-radius:16px;padding:22px;">
-          <div style="font-size:28px;margin-bottom:10px;">📊</div>
-          <div style="color:#fff;font-weight:700;font-size:14px;margin-bottom:6px;">Dataset</div>
-          <div style="color:rgba(200,160,255,0.7);font-size:12px;line-height:1.6;">Trained on combined ISIC + HAM10000 + augmented datasets covering 13 skin condition categories.</div>
-        </div>
-        <div style="background:rgba(80,0,180,0.18);border:1px solid rgba(140,70,255,0.25);border-radius:16px;padding:22px;">
-          <div style="font-size:28px;margin-bottom:10px;">🌡️</div>
-          <div style="color:#fff;font-weight:700;font-size:14px;margin-bottom:6px;">Explainability</div>
-          <div style="color:rgba(200,160,255,0.7);font-size:12px;line-height:1.6;">Grad-CAM visualizations provide transparency into which image regions influence each diagnosis.</div>
-        </div>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f'<div class="canva-sec"><img src="{data_uri("P2S2.png")}" /></div>', unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
